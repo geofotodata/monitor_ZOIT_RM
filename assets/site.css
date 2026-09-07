@@ -414,6 +414,12 @@ input:focus, select:focus { border-color: var(--territory); outline: 3px solid r
 .action-detail dl div { padding: 13px 0; border-bottom: 1px solid #e6edf0; }
 .action-detail dt { color: var(--subtle); font-size: .72rem; font-weight: 850; letter-spacing: .05em; text-transform: uppercase; }
 .action-detail dd { margin: 4px 0 0; font-size: .92rem; overflow-wrap: anywhere; }
+.action-documents { display: grid; gap: 8px; margin-top: 16px; padding: 15px; border-radius: 12px; background: #eaf3ef; }
+.action-documents > strong { color: var(--deep); font-size: .78rem; letter-spacing: .04em; text-transform: uppercase; }
+.action-documents a { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border: 1px solid #cfe0d8; border-radius: 9px; background: #fff; color: var(--deep); text-decoration: none; }
+.action-documents a:hover { border-color: var(--territory); }
+.action-documents a span { font-size: .88rem; font-weight: 750; }
+.action-documents a small { color: var(--territory); font-size: .75rem; font-weight: 750; text-align: right; }
 .note { margin: 14px 0 0; padding: 13px; border-left: 3px solid var(--territory); border-radius: 8px; background: var(--territory-soft); font-size: .88rem; }
 .empty { grid-column: 1 / -1; padding: 44px 24px; border: 1px dashed var(--line-strong); border-radius: var(--radius-md); background: rgba(255, 255, 255, .55); text-align: center; }
 .empty p { margin-bottom: 0; color: var(--muted); }

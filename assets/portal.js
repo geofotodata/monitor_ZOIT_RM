@@ -3,7 +3,7 @@
   const territoryId = document.body.dataset.territory;
   if (!territoryId) return;
   const publicApi = 'https://monitor-zoit-rm-public-api.monitor-zoit-rm.workers.dev';
-  const state = { actions: [], query: '', status: 'Todas', line: 'Todas', page: 1, pageSize: 12 };
+  const state = { actions: [], documents: [], query: '', status: 'Todas', line: 'Todas', page: 1, pageSize: 12 };
   const $ = (id) => document.getElementById(id);
   const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
   const statusClass = (status) => ({ Terminada: 'done', 'En ejecución': 'doing', Pendiente: 'pending', 'Sin seguimiento': 'untracked' })[status] ?? 'untracked';
@@ -22,6 +22,12 @@
     });
   }
 
+  function renderActionDocuments(actionId) {
+    const documents = state.documents.filter((document) => Number(document.action_id) === Number(actionId));
+    if (!documents.length) return '';
+    return `<div class="action-documents"><strong>Verificadores publicados</strong>${documents.map((document) => `<a href="${escapeHtml(document.href)}" target="_blank" rel="noreferrer"><span>${escapeHtml(document.title)}</span><small>${escapeHtml(document.note || document.file_name || 'Abrir documento')} ↗</small></a>`).join('')}</div>`;
+  }
+
   function renderActions() {
     const filtered = filteredActions();
     const pages = Math.max(1, Math.ceil(filtered.length / state.pageSize));
@@ -31,7 +37,7 @@
     $('action-grid').innerHTML = visible.length ? visible.map((action) => {
       const progress = action.status === 'Sin seguimiento' ? null : parseProgress(action.progress);
       const progressLabel = progress === null ? 'Avance no informado' : `${escapeHtml(action.progress)} de avance`;
-      return `<details class="action-card"><summary><div class="card-top"><span class="status ${statusClass(action.status)}">${escapeHtml(action.status)}</span><span class="action-number">Acción ${action.id}</span></div><h3>${escapeHtml(action.name)}</h3><p class="action-line">${escapeHtml(action.line)}</p><div class="action-progress"><div><strong>${progressLabel}</strong><span aria-hidden="true">＋</span></div>${progress === null ? '<div class="progress-track is-empty"><i></i></div>' : `<div class="progress-track" role="progressbar" aria-label="Avance informado" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><i style="width:${progress}%"></i></div>`}</div></summary><div class="action-detail"><dl><div><dt>Responsable</dt><dd>${escapeHtml(action.owner || 'No informado')}</dd></div><div><dt>Indicador</dt><dd>${escapeHtml(action.indicator || 'No informado')}</dd></div><div><dt>Meta</dt><dd>${escapeHtml(action.goal || 'No informada')}</dd></div><div><dt>Medio de verificación</dt><dd>${escapeHtml(action.plannedVerifier || 'No informado')}</dd></div><div><dt>Presupuesto planificado</dt><dd>${escapeHtml(action.plannedBudget || 'No informado')}</dd></div><div><dt>Financiamiento</dt><dd>${escapeHtml(action.funding || 'No informado')}</dd></div></dl>${action.notes ? `<p class="note">${escapeHtml(action.notes)}</p>` : ''}</div></details>`;
+      return `<details class="action-card"><summary><div class="card-top"><span class="status ${statusClass(action.status)}">${escapeHtml(action.status)}</span><span class="action-number">Acción ${action.id}</span></div><h3>${escapeHtml(action.name)}</h3><p class="action-line">${escapeHtml(action.line)}</p><div class="action-progress"><div><strong>${progressLabel}</strong><span aria-hidden="true">＋</span></div>${progress === null ? '<div class="progress-track is-empty"><i></i></div>' : `<div class="progress-track" role="progressbar" aria-label="Avance informado" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><i style="width:${progress}%"></i></div>`}</div></summary><div class="action-detail"><dl><div><dt>Responsable</dt><dd>${escapeHtml(action.owner || 'No informado')}</dd></div><div><dt>Indicador</dt><dd>${escapeHtml(action.indicator || 'No informado')}</dd></div><div><dt>Meta</dt><dd>${escapeHtml(action.goal || 'No informada')}</dd></div><div><dt>Medio de verificación</dt><dd>${escapeHtml(action.plannedVerifier || 'No informado')}</dd></div><div><dt>Presupuesto planificado</dt><dd>${escapeHtml(action.plannedBudget || 'No informado')}</dd></div><div><dt>Financiamiento</dt><dd>${escapeHtml(action.funding || 'No informado')}</dd></div></dl>${renderActionDocuments(action.id)}${action.notes ? `<p class="note">${escapeHtml(action.notes)}</p>` : ''}</div></details>`;
     }).join('') : '<div class="empty"><strong>No hay resultados</strong><p>Modifica la búsqueda o elimina los filtros.</p></div>';
     $('pagination').innerHTML = pages > 1 ? `<button type="button" data-page="prev" ${state.page === 1 ? 'disabled' : ''}>← Anterior</button><span>Página <strong>${state.page}</strong> de ${pages}</span><button type="button" data-page="next" ${state.page === pages ? 'disabled' : ''}>Siguiente →</button>` : '';
     document.querySelectorAll('[data-status]').forEach((button) => {
@@ -56,7 +62,7 @@
   }
 
   function renderDocuments(documents) {
-    $('document-list').innerHTML = documents.length ? documents.map((document, index) => `<a class="document-card ${index === 0 ? 'primary-document' : ''}" href="${escapeHtml(document.href)}" target="_blank" rel="noreferrer"><span>${index === 0 ? 'Documento principal' : 'Antecedente'}</span><strong>${escapeHtml(document.title)}</strong><small>${escapeHtml(document.note)} ↗</small></a>`).join('') : '<div class="empty"><strong>No hay documentos publicados</strong><p>Los antecedentes se incorporarán después de validar su fuente.</p></div>';
+    $('document-list').innerHTML = documents.length ? documents.map((document, index) => `<a class="document-card ${index === 0 ? 'primary-document' : ''}" href="${escapeHtml(document.href)}" target="_blank" rel="noreferrer"><span>${index === 0 ? 'Documento principal' : document.document_category === 'governance-minute' ? 'Acta de gobernanza' : document.action_id ? `Acción ${escapeHtml(document.action_id)}` : 'Antecedente general'}</span><strong>${escapeHtml(document.title)}</strong><small>${escapeHtml(document.note)} ↗</small></a>`).join('') : '<div class="empty"><strong>No hay documentos publicados</strong><p>Los antecedentes se incorporarán después de validar su fuente.</p></div>';
   }
 
   async function fetchJson(url) {
@@ -119,6 +125,8 @@
     try {
       const published = await fetchJson(`${publicApi}/api/territory?territory=${encodeURIComponent(territoryId)}`);
       const publishedDocuments = (published.documents ?? []).map((document) => ({
+        action_id: document.action_id,
+        document_category: document.document_category,
         title: document.title,
         href: `${publicApi}/api/documents/${encodeURIComponent(document.id)}`,
         note: document.notes || (document.action_id ? `Acción ${document.action_id}` : 'Antecedente general'),
@@ -138,6 +146,7 @@
       if ($('publication-state')) $('publication-state').textContent = `${staticData.freshness} · copia pública de respaldo`;
     }
     state.actions = data.actions;
+    state.documents = data.documents;
     renderSummary(data.actions);
     const statuses = [...new Set(data.actions.map((action) => action.status))];
     const lines = [...new Set(data.actions.map((action) => action.line))].sort((a, b) => a.localeCompare(b, 'es-CL'));
