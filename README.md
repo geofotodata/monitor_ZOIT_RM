@@ -11,7 +11,7 @@ Portal público de consulta de los planes de acción de las Zonas de Interés Tu
 
 ## Contenido
 
-Cada portal territorial presenta las acciones disponibles, filtros de consulta, mapa ZOIT, gobernanza, documentación y contexto normativo. La administración está alojada por separado, protegida con autenticación y no forma parte de este repositorio público.
+Cada portal territorial presenta las acciones disponibles, filtros de consulta, mapa ZOIT, gobernanza, documentación y contexto normativo. La administración está alojada por separado, protegida con autenticación y no forma parte de este repositorio público. Los portales consultan una API pública de solo lectura que entrega exclusivamente la última versión aprobada por el moderador; si no está disponible, conservan esta publicación estática como respaldo.
 
 ## Actualización cartográfica
 

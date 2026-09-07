@@ -2,6 +2,7 @@
   'use strict';
   const territoryId = document.body.dataset.territory;
   if (!territoryId) return;
+  const publicApi = 'https://monitor-zoit-rm-public-api.monitor-zoit-rm.workers.dev';
   const state = { actions: [], query: '', status: 'Todas', line: 'Todas', page: 1, pageSize: 12 };
   const $ = (id) => document.getElementById(id);
   const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
@@ -38,36 +39,72 @@
   }
 
   function renderDocuments(documents) {
-    $('document-list').innerHTML = documents.map((document, index) => `<a class="document-card ${index === 0 ? 'primary-document' : ''}" href="${escapeHtml(document.href)}" target="_blank" rel="noreferrer"><span>${index === 0 ? 'Documento principal' : 'Antecedente'}</span><strong>${escapeHtml(document.title)}</strong><small>${escapeHtml(document.note)} ↗</small></a>`).join('');
+    $('document-list').innerHTML = documents.length ? documents.map((document, index) => `<a class="document-card ${index === 0 ? 'primary-document' : ''}" href="${escapeHtml(document.href)}" target="_blank" rel="noreferrer"><span>${index === 0 ? 'Documento principal' : 'Antecedente'}</span><strong>${escapeHtml(document.title)}</strong><small>${escapeHtml(document.note)} ↗</small></a>`).join('') : '<div class="empty"><strong>No hay documentos publicados</strong><p>Los antecedentes se incorporarán después de validar su fuente.</p></div>';
   }
 
-  function renderMap(data) {
+  async function fetchJson(url) {
+    const response = await fetch(url, { credentials: 'omit', cache: 'no-store' });
+    if (!response.ok) throw new Error(`Solicitud no disponible (${response.status})`);
+    return response.json();
+  }
+
+  async function renderMap(data, usePublishedMap) {
     if (!window.L) return;
     const map = L.map('map', { scrollWheelZoom: false });
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(map);
-    fetch(`../data/${data.mapFile}`).then((response) => {
-      if (!response.ok) throw new Error('Cobertura no disponible');
-      return response.json();
-    }).then((geojson) => {
+    try {
+      let geojson;
+      if (usePublishedMap) {
+        try { geojson = await fetchJson(`${publicApi}/api/map?territory=${encodeURIComponent(territoryId)}`); }
+        catch { geojson = await fetchJson(`../data/${data.mapFile}`); }
+      } else {
+        geojson = await fetchJson(`../data/${data.mapFile}`);
+      }
       const boundary = L.geoJSON(geojson, { style: { color: '#e63946', weight: 3, opacity: 0.95, fillColor: '#16826d', fillOpacity: 0.12 } }).addTo(map);
       L.control.layers({}, { 'Límite ZOIT': boundary }, { collapsed: false }).addTo(map);
       const bounds = boundary.getBounds();
       if (bounds.isValid()) map.fitBounds(bounds, { padding: [24, 24] });
-    }).catch(() => { $('map').innerHTML = '<p class="map-error">No fue posible cargar la cobertura territorial.</p>'; });
+    } catch {
+      map.remove();
+      $('map').innerHTML = '<p class="map-error">No fue posible cargar la cobertura territorial.</p>';
+    }
   }
 
-  fetch(`../data/${territoryId}.json`).then((response) => {
-    if (!response.ok) throw new Error('Datos no disponibles');
-    return response.json();
-  }).then((data) => {
+  async function loadPortal() {
+    const staticData = await fetchJson(`../data/${territoryId}.json`);
+    let data = staticData;
+    let hasPublishedSnapshot = false;
+    try {
+      const published = await fetchJson(`${publicApi}/api/territory?territory=${encodeURIComponent(territoryId)}`);
+      const publishedDocuments = (published.documents ?? []).map((document) => ({
+        title: document.title,
+        href: `${publicApi}/api/documents/${encodeURIComponent(document.id)}`,
+        note: document.notes || (document.action_id ? `Acción ${document.action_id}` : 'Antecedente general'),
+      }));
+      data = {
+        ...staticData,
+        actions: Array.isArray(published.actions) && published.actions.length ? published.actions : staticData.actions,
+        content: published.content ?? staticData.content,
+        documents: [...staticData.documents, ...publishedDocuments],
+      };
+      hasPublishedSnapshot = true;
+      if ($('publication-state') && published.publication?.published_at) {
+        const date = new Date(published.publication.published_at);
+        $('publication-state').textContent = `Versión publicada el ${new Intl.DateTimeFormat('es-CL', { dateStyle: 'medium', timeStyle: 'short' }).format(date)}`;
+      }
+    } catch {
+      if ($('publication-state')) $('publication-state').textContent = `${staticData.freshness} · copia pública de respaldo`;
+    }
     state.actions = data.actions;
     renderSummary(data.actions);
     const statuses = [...new Set(data.actions.map((action) => action.status))];
     const lines = [...new Set(data.actions.map((action) => action.line))].sort((a, b) => a.localeCompare(b, 'es-CL'));
     $('status').insertAdjacentHTML('beforeend', statuses.map((value) => `<option>${escapeHtml(value)}</option>`).join(''));
     $('line').insertAdjacentHTML('beforeend', lines.map((value) => `<option>${escapeHtml(value)}</option>`).join(''));
-    renderActions(); renderGovernance(data.content); renderDocuments(data.documents); renderMap(data);
-  }).catch((error) => { $('action-grid').innerHTML = `<div class="empty"><strong>No fue posible cargar el portal</strong><p>${escapeHtml(error.message)}</p></div>`; });
+    renderActions(); renderGovernance(data.content); renderDocuments(data.documents); renderMap(data, hasPublishedSnapshot);
+  }
+
+  loadPortal().catch((error) => { $('action-grid').innerHTML = `<div class="empty"><strong>No fue posible cargar el portal</strong><p>${escapeHtml(error.message)}</p></div>`; });
 
   $('search').addEventListener('input', (event) => { state.query = event.target.value; state.page = 1; renderActions(); });
   $('status').addEventListener('change', (event) => { state.status = event.target.value; state.page = 1; renderActions(); });
