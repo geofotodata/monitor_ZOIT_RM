@@ -34,3 +34,19 @@ export function groupActions(actions, field) {
   actions.forEach((action) => { const key = action[field] || 'Sin información'; if (!grouped.has(key)) grouped.set(key, []); grouped.get(key).push(action); });
   return [...grouped].map(([name, items]) => ({ name, items }));
 }
+
+/** Validate the regional aggregation contract; never treat missing records as zero. */
+export function validPublicActions(actions) {
+  return Array.isArray(actions) && actions.length > 0
+    && actions.every(a=>a && Number.isInteger(a.id) && statuses.includes(a.status))
+    && new Set(actions.map(a=>a.id)).size === actions.length;
+}
+
+/** O(n) counts from the selected, available territories. No average progress is inferred. */
+export function summarizeRegions(regions, territory='Todas') {
+  const selected=regions.filter(r=>territory==='Todas'||r.id===territory);
+  const available=selected.filter(r=>validPublicActions(r.actions));
+  const counts=Object.fromEntries(statuses.map(s=>[s,0]));
+  for(const region of available)for(const action of region.actions)counts[action.status]++;
+  return {counts,total:available.reduce((n,r)=>n+r.actions.length,0),available:available.length,missing:selected.length-available.length};
+}

@@ -1,5 +1,5 @@
 // Cambio UI: interactive public portals. Drafts and private storage never enter this client.
-import { statuses, statusClass, normalize, escapeHtml as esc, progressValue, safeHref, linkedActions, actorCategory, filterActions, groupActions } from './portal-model.js';
+import { statuses, statusClass, normalize, escapeHtml as esc, progressValue, safeHref, linkedActions, actorCategory, filterActions, groupActions } from './portal-model.js?v=20260909';
 const $ = (id) => document.getElementById(id);
 const api = 'https://monitor-zoit-rm-public-api.monitor-zoit-rm.workers.dev';
 const territoryId = document.body.dataset.territory;
@@ -209,14 +209,6 @@ async function loadPortal() {
   if(params.has('accion'))openAction(params.get('accion'));
   if(location.hash==='#documentacion')scrollTo('documentos');
 }
-async function loadDirectory() {
-  const ids=['san-jose-de-maipo','pirque','isla-de-maipo'];
-  const results=await Promise.allSettled(ids.map(id=>fetchJson(api+'/api/territory?territory='+id)));
-  let total=0,live=0;
-  results.forEach((result,i)=>{const el=document.querySelector('[data-card="'+ids[i]+'"] [data-territory-count]');if(result.status==='fulfilled'&&Array.isArray(result.value.actions)){el.textContent=result.value.actions.length;live++;}total+=Number(el.textContent);});
-  $('regional-actions').textContent=total;
-  $('directory-state').textContent=live===3?'Recuentos de las últimas publicaciones de los tres territorios.':live+' de 3 territorios consultados en vivo; el resto muestra la copia pública de respaldo.';
-}
 if(territoryId) {
   loadPortal().catch(()=>{$('action-grid').innerHTML='<div class="empty"><h3>No fue posible cargar las acciones</h3><p>Recarga la página para reintentar.</p></div>';$('publication-state').textContent='Información temporalmente no disponible';});
   $('territory-switch').addEventListener('change',e=>{const allowed=['san-jose-de-maipo','pirque','isla-de-maipo'];if(allowed.includes(e.target.value))location.href='../'+e.target.value+'/'+location.hash;});
@@ -246,4 +238,9 @@ if(territoryId) {
     else if(b.hasAttribute('data-actor')&&Date.now()-lastDragEnd>200)selectActor(b.dataset.actor);
     else if(b.id==='actor-actions'){const entity=state.data.content.governanceEntities[state.selectedActor];resetActions();state.actorIds=linkedActions(entity,state.actions).map(a=>a.id);state.actorName=entity.name;groupActions(filterActions(state.actions,state),'line').forEach(g=>state.expanded.add(g.name));renderActions();scrollTo('acciones');}
   });
-} else if(document.body.dataset.directory)loadDirectory();
+} else if(document.body.dataset.directory) {
+  import('./regional-dashboard.js?v=20260909').then(m=>m.initRegionalDashboard()).catch(()=>{
+    $('regional-source').textContent='No fue posible cargar el panorama regional. Puedes consultar cada portal territorial.';
+    $('regional-kpis').textContent='Panorama temporalmente no disponible.';
+  });
+}

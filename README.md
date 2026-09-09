@@ -1,39 +1,53 @@
 # Monitor ZOIT RM
 
-Portal público de consulta de los planes de acción de las Zonas de Interés Turístico de San José de Maipo, Pirque e Isla de Maipo.
+## Nuestro propósito
 
-## Acceso público
+**Acercar a la comunidad la información sobre el desarrollo turístico de su territorio.** Monitor ZOIT RM reúne los planes de acción de San José de Maipo, Pirque e Isla de Maipo para que sus habitantes, organizaciones e instituciones puedan conocer los compromisos, quiénes participan y qué antecedentes respaldan su seguimiento.
 
-- [Directorio Monitor ZOIT RM](https://geofotodata.github.io/monitor_ZOIT_RM/)
-- [San José de Maipo](https://geofotodata.github.io/monitor_ZOIT_RM/san-jose-de-maipo/)
-- [Pirque](https://geofotodata.github.io/monitor_ZOIT_RM/pirque/)
-- [Isla de Maipo](https://geofotodata.github.io/monitor_ZOIT_RM/isla-de-maipo/)
+La plataforma busca contribuir a la transparencia, la coordinación público-privada y una participación mejor informada. No es un ranking de destinos ni una certificación de cumplimiento: es una herramienta de consulta y seguimiento de la información disponible.
 
-## Contenido
+## Tres territorios, una mirada compartida
 
-### Experiencia interactiva · septiembre de 2026
+- [Portal regional](https://geofotodata.github.io/monitor_ZOIT_RM/): panorama interactivo de las tres ZOIT.
+- [San José de Maipo](https://geofotodata.github.io/monitor_ZOIT_RM/san-jose-de-maipo/): su plan, comunidad de actores y territorio cordillerano.
+- [Pirque](https://geofotodata.github.io/monitor_ZOIT_RM/pirque/): su plan y su identidad turística y vitivinícola.
+- [Isla de Maipo](https://geofotodata.github.io/monitor_ZOIT_RM/isla-de-maipo/): su plan y su identidad rural, patrimonial y vitivinícola.
 
-- Portada regional y tres identidades territoriales diferenciadas.
-- Acciones agrupadas por línea, tablero por estado y lista paginada, con búsqueda y filtros combinables.
-- Fichas de acciones con enlace directo, responsables, metas y documentos publicados.
-- Red de actores seleccionable y movible, filtros por categoría y búsqueda; directorio alternativo para móviles y teclado.
-- Biblioteca de documentos y mapa ZOIT con capa seleccionable, control de opacidad y recentrado.
-- Navegación móvil, foco visible y respeto de la preferencia de movimiento reducido.
+Los tres portales comparten una estructura de consulta, pero mantienen contenidos, actores y antecedentes propios.
 
-Los vínculos actor–acción se muestran solo por coincidencia exacta normalizada con el campo responsable. Las posiciones y líneas de la red son organizativas: no indican influencia, jerarquía ni relaciones entre instituciones. Los avances vacíos no se interpretan como 0 %.
+## ¿Qué puedes conocer?
 
-Las direcciones públicas de este repositorio incluyen el prefijo `/monitor_ZOIT_RM/`; la raíz del usuario GitHub no corresponde a esta publicación.
+- **El rumbo de cada plan:** misión, visión y horizonte de planificación, con acceso a sus fuentes.
+- **Los compromisos:** acciones, estados informados, responsables, indicadores, metas y medios de verificación.
+- **La gobernanza:** entidades identificadas y sus coincidencias con responsables de acciones.
+- **El territorio:** delimitación geográfica ZOIT y procedencia de la cobertura.
+- **Los antecedentes:** planes, actas, verificadores y otros documentos aprobados para consulta pública.
+- **La declaratoria:** decreto, fecha de dictación, publicación oficial y término calculado del período inicial, distinguiéndolo del horizonte del plan.
 
-Cada portal territorial presenta las acciones disponibles, distribución por estado, filtros de consulta, mapa ZOIT, gobernanza, documentación y contexto normativo. Los tres comparten una interfaz responsiva, accesible y de contraste alto, manteniendo contenidos e identidad cromática propios. La administración está alojada por separado, protegida con autenticación y no forma parte de este repositorio público. Los portales consultan una API pública de solo lectura que entrega exclusivamente la última versión aprobada por el moderador; si no está disponible, conservan esta publicación estática como respaldo.
+El panorama regional permite comparar cantidades y proporciones de acciones por estado, filtrar un territorio y abrir los registros que explican cada cifra.
 
-Los verificadores de acciones, actas y antecedentes se gestionan de forma privada desde el portal moderador. Solo aparecen en estos portales cuando el moderador publica expresamente una versión aprobada; la publicación genera una copia pública independiente y no expone las carpetas privadas de Google Drive.
+## ¿A quién está dirigida?
 
-## Actualización cartográfica
+A habitantes de las tres comunas, organizaciones comunitarias, emprendedores, prestadores turísticos, integrantes de las mesas público-privadas e instituciones que participan en el desarrollo turístico local.
 
-La cobertura de Pirque usa como fuente `ZOIT PIRQUE (1).kmz`, recibida el 4 de septiembre de 2026. Contiene un polígono válido de 4.076 coordenadas almacenadas en EPSG:4326. Su geometría coincide con la fuente anterior; se actualizó la procedencia y se corrigió el conteo documentado.
+## Información pública con responsabilidad
 
-## Alcance de los datos
+La administración está separada del acceso ciudadano. Los cambios se preparan como borradores privados y solo se muestran cuando el moderador publica una versión aprobada del territorio correspondiente. Los documentos privados de Google Drive no se exponen por el solo hecho de adjuntarlos.
 
-La publicación técnica no certifica la vigencia ni la calidad institucional de todas las métricas. Los registros sin seguimiento validado se muestran como no informados o por validar, y deben confirmarse con el organismo responsable antes de utilizarlos en decisiones oficiales.
+Los portales consultan esa publicación al abrirse. Si no está disponible, pueden utilizar una copia de respaldo identificada como tal. La fecha de publicación no certifica por sí sola la actualización o validación de todos los registros.
 
-Este repositorio contiene una publicación estática generada. Las actualizaciones se preparan y revisan en el repositorio privado de administración antes de publicarse aquí.
+Para interpretar la información:
+
+- Un recuento de acciones terminadas **no equivale a un avance global del plan** ni mide su impacto económico, social o ambiental.
+- La falta de seguimiento o de un dato no se interpreta como incumplimiento ni como cero avance.
+- La posición de los actores en la red no representa influencia ni relaciones institucionales no documentadas.
+- Misión y visión se presentan como síntesis de lectura, con enlaces a la formulación original.
+- El término inicial de la declaratoria se calcula según el artículo 18 del Decreto N.º 30/2016. Puede variar por prórrogas u otros actos posteriores; la plataforma no reemplaza una certificación de vigencia.
+
+## ¿Qué es una ZOIT?
+
+Una Zona de Interés Turístico es un instrumento de planificación integrada para territorios con condiciones especiales de atracción turística que requieren conservación y coordinación de inversiones. Su plan de acción organiza compromisos para el desarrollo sustentable del turismo.
+
+Consulta el [marco oficial de las ZOIT en la Subsecretaría de Turismo](https://www.subturismo.gob.cl/desarrollo-de-destinos-y-gestion-territorial/zonas-de-interes-turistico/) y el [Reglamento, Decreto N.º 30/2016](https://www.bcn.cl/leychile/navegar?idNorma=1097480).
+
+**Nuestro compromiso es hacer la información comprensible, trazable y útil para el territorio, sin sustituir las fuentes ni la responsabilidad de las instituciones que la generan.**
